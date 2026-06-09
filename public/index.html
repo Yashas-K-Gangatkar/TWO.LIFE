@@ -106,7 +106,7 @@
     <div class="string-ring-2"></div>
   </div>
   <div class="load-title" id="load-title"><span class="cursor"></span></div>
-  <div class="load-subtitle" id="load-subtitle">35 Bombs. 1 Life. 1% Chance.</div>
+  <div class="load-subtitle" id="load-subtitle">10 Bombs. 1 Life. Can You Survive?</div>
   <div class="load-bar-track" id="load-bar-track"><div class="load-bar-fill" id="load-bar-fill"></div></div>
   <div class="load-python-tag" id="load-python-tag">&#x1F40D; Python Engine</div>
 </div>
@@ -117,19 +117,19 @@
 <div class="app">
   <div class="header">
     <h1>BOMB SWEEP</h1>
-    <p>35 Bombs Hidden. 1 Life. ~1% Win Rate. Good Luck!</p>
+    <p>10 Bombs Hidden. 1 Life. Can You Survive?</p>
     <span class="python-badge">&#x1F40D; Powered by Python</span>
   </div>
   <div class="status-bar">
     <div class="lives-display" id="lives-display">
       <span class="heart alive" id="heart-0">&#10084;&#65039;</span>
     </div>
-    <div class="status-item"><span class="icon">&#x1F4A3;</span><span class="label">Bombs:</span><span class="value" id="bombs-left">35</span></div>
+    <div class="status-item"><span class="icon">&#x1F4A3;</span><span class="label">Bombs:</span><span class="value" id="bombs-left">10</span></div>
     <div class="status-item"><span class="icon">&#x1F3C6;</span><span class="label">Best:</span><span class="value" id="best-streak">0</span></div>
     <div class="status-item"><span class="icon">&#x1F525;</span><span class="label">Streak:</span><span class="value" id="current-streak">0</span></div>
   </div>
   <div class="progress-wrapper">
-    <div class="progress-label"><span>Safe cells revealed</span><span id="progress-text">0 / 65</span></div>
+    <div class="progress-label"><span>Safe cells revealed</span><span id="progress-text">0 / 90</span></div>
     <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
   </div>
   <div class="grid-container" id="grid"></div>
@@ -166,8 +166,8 @@
 
   var GRID_SIZE = 10;
   var TOTAL_CELLS = 100;
-  var NUM_BOMBS = 35;
-  var TOTAL_SAFE = 65;
+  var NUM_BOMBS = 10;
+  var TOTAL_SAFE = 90;
   var MAX_LIVES = 1;
 
   // ═══ GAME STATE ═══
