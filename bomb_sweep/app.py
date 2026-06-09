@@ -1,27 +1,26 @@
 """
-Bomb Sweep — Python-Powered Edition
-Uses PyScript to run all game logic in Python inside the browser.
+Bomb Sweep — Flask Server Entry Point
+======================================
+Serves the Python-powered game page.
+All game logic is in Python files:
+  - game/engine.py: Core game engine (BombSweepGame)
+  - pyscript_app.py: PyScript UI controller
+  - server.py: This Flask server with API routes
 
 Run:  python3 app.py
 Open: http://127.0.0.1:5001
-
-Note: The game also works as a standalone HTML file — just open
-pyscript_index.html in any browser. No server needed!
 """
 
-from flask import Flask, send_file
-
-app = Flask(__name__)
-
-
-@app.route("/")
-def index():
-    """Serve the PyScript-powered game page."""
-    return send_file("pyscript_index.html")
-
+from server import app
 
 if __name__ == "__main__":
-    print("\n💣  Bomb Sweep — Python Edition Starting...")
-    print("   PyScript runs Python in the browser — no API needed!")
-    print("   Open http://127.0.0.1:5001\n")
+    print("\n" + "=" * 50)
+    print("  BOMB SWEEP — Python Flask Server")
+    print("  All game logic is in Python!")
+    print("  - game/engine.py: Core engine")
+    print("  - pyscript_app.py: Browser UI")
+    print("  - server.py: API routes")
+    print("=" * 50)
+    print("  Open: http://127.0.0.1:5001")
+    print("=" * 50 + "\n")
     app.run(debug=True, host="0.0.0.0", port=5001)
