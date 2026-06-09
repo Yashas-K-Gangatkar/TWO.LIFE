@@ -113,7 +113,7 @@
     <div class="string-ring-2"></div>
   </div>
   <div class="load-title" id="load-title"><span class="cursor"></span></div>
-  <div class="load-subtitle" id="load-subtitle">5 Bombs. Memorize. Shuffle. Survive.</div>
+  <div class="load-subtitle" id="load-subtitle">5 Bombs. 2 Lives. Memorize. Shuffle. Survive.</div>
   <div class="load-bar-track" id="load-bar-track"><div class="load-bar-fill" id="load-bar-fill"></div></div>
   <div class="load-python-tag" id="load-python-tag">&#x1F40D; Python Engine</div>
 </div>
@@ -124,13 +124,14 @@
 <div class="app">
   <div class="header">
     <h1>BOMB SWEEP</h1>
-    <p>Memorize the bombs, then shuffle and play!</p>
+    <p>5 Bombs. 2 Lives. Memorize, shuffle &amp; survive!</p>
     <span class="python-badge">&#x1F40D; Powered by Python</span>
   </div>
   <div class="phase-banner" id="phase-banner">&#x1F4A3; MEMORIZE PHASE &mdash; Remember the 5 bomb locations!</div>
   <div class="status-bar">
     <div class="lives-display" id="lives-display">
       <span class="heart alive" id="heart-0">&#10084;&#65039;</span>
+      <span class="heart alive" id="heart-1">&#10084;&#65039;</span>
     </div>
     <div class="status-item"><span class="icon">&#x1F4A3;</span><span class="label">Bombs:</span><span class="value" id="bombs-left">5</span></div>
     <div class="status-item"><span class="icon">&#x1F3C6;</span><span class="label">Best:</span><span class="value" id="best-streak">0</span></div>
@@ -168,7 +169,7 @@
   var TOTAL_CELLS = 100;
   var NUM_BOMBS = 5;
   var TOTAL_SAFE = 95;
-  var MAX_LIVES = 1;
+  var MAX_LIVES = 2;
 
   // ═══ GAME STATE ═══
   var bombIndices = [];
@@ -441,16 +442,20 @@
       var bombsRemaining = NUM_BOMBS - countBombsFound();
       $("bombs-left").textContent = bombsRemaining;
 
+      var breakIdx = result.lives;
       if(result.status === "lost"){
-        updateLivesUI(0, 0);
+        updateLivesUI(0, breakIdx);
         updateProgress();
         disableGrid();
         $("btn-reveal").style.display = "";
         setTimeout(function(){
-          showModal("lose", "Game Over!", "You hit a bomb! Better luck next time!");
+          showModal("lose", "Game Over!", "You hit a bomb! No lives left!");
         }, 800);
       } else {
+        updateLivesUI(result.lives, breakIdx);
         updateProgress();
+        var lw = result.lives === 1 ? "life" : "lives";
+        showToast("Bomb hit! " + result.lives + " " + lw + " remaining!", "error");
       }
 
     } else {

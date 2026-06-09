@@ -28,7 +28,7 @@ GRID_SIZE = 10
 TOTAL_CELLS = GRID_SIZE * GRID_SIZE  # 100 cells
 NUM_BOMBS = 5
 TOTAL_SAFE = TOTAL_CELLS - NUM_BOMBS  # 95 safe cells
-MAX_LIVES = 1
+MAX_LIVES = 2
 
 
 # ═══════════════════════════════════════════════════════════
