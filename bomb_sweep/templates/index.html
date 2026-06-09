@@ -4,8 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Bomb Sweep — Python Edition</title>
-<link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css">
-<script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
   :root{--bg:#0d0d1a;--surface:#1a1a2e;--surface-light:#22223a;--accent:#e94560;--accent-glow:rgba(233,69,96,.4);--safe:#0f9b58;--gold:#ffd700;--text:#eaeaea;--text-muted:#8888aa;--border:#333355;--cell-bg:#2a2a4a;--cell-hover:#3a3a5e;--cell-revealed:#151528;--radius:8px}
@@ -72,9 +70,11 @@
   @keyframes toast-out{from{opacity:1}to{opacity:0;transform:translateY(-10px)}}
   .screen-flash{position:fixed;inset:0;z-index:80;pointer-events:none;background:rgba(233,69,96,.3);animation:screen-flash .5s ease forwards}
   @keyframes screen-flash{0%{opacity:1}100%{opacity:0}}
+
+  /* ═══ LOADING SCREEN ═══ */
   #loading-overlay{position:fixed;inset:0;z-index:999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .8s ease}
   #loading-overlay.hidden{opacity:0;pointer-events:none}
-  .load-logo{position:relative;width:120px;height:120px;margin-bottom:20px}
+  .load-logo{position:relative;width:120px;height:120px;margin-bottom:24px}
   .load-logo .bomb-icon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:4rem;opacity:0;animation:logo-appear .6s ease .3s forwards}
   @keyframes logo-appear{0%{opacity:0;transform:scale(0) rotate(-180deg)}60%{opacity:1;transform:scale(1.2) rotate(10deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
   .load-logo .string-ring{position:absolute;inset:-10px;border:3px solid transparent;border-top-color:var(--accent);border-right-color:var(--gold);border-radius:50%;opacity:0;animation:string-spin 1.2s linear .5s infinite,ring-appear .4s ease .2s forwards}
@@ -82,32 +82,33 @@
   @keyframes ring-appear{to{opacity:1}}
   .load-logo .string-ring-2{position:absolute;inset:-20px;border:2px solid transparent;border-bottom-color:var(--safe);border-left-color:#5bc0de;border-radius:50%;opacity:0;animation:string-spin-r 1.8s linear .7s infinite,ring-appear .4s ease .4s forwards}
   @keyframes string-spin-r{to{transform:rotate(-360deg)}}
-  .load-title{font-size:2.8rem;font-weight:900;letter-spacing:-1px;background:linear-gradient(135deg,var(--accent),#ff6b6b,var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;opacity:0;animation:title-reveal .8s ease .8s forwards}
-  @keyframes title-reveal{0%{opacity:0;transform:translateY(20px);letter-spacing:12px}60%{opacity:1;letter-spacing:-1px}100%{opacity:1;transform:translateY(0);letter-spacing:-1px}}
-  .load-subtitle{color:var(--text-muted);font-size:.95rem;margin-top:8px;opacity:0;animation:subtitle-in .6s ease 1.2s forwards}
-  @keyframes subtitle-in{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:translateY(0)}}
-  .load-bar-track{width:200px;height:4px;background:var(--surface);border-radius:4px;margin-top:24px;overflow:hidden;opacity:0;animation:subtitle-in .4s ease 1.4s forwards}
-  .load-bar-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--gold));border-radius:4px;animation:load-progress 2.5s ease 1.6s forwards}
-  @keyframes load-progress{0%{width:0%}30%{width:40%}60%{width:70%}90%{width:92%}100%{width:100%}}
-  .load-python-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(55,118,171,.2);color:#4B8BBE;border:1px solid rgba(55,118,171,.4);padding:4px 14px;border-radius:20px;font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-top:16px;opacity:0;animation:subtitle-in .4s ease 1.8s forwards}
-  .string-particle{position:absolute;width:3px;height:3px;border-radius:50%;pointer-events:none;animation:string-fly 1s ease-out forwards}
-  @keyframes string-fly{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(0)}}
-  @media(max-width:520px){.header h1{font-size:1.7rem}.grid-container{gap:3px;max-width:340px}.cell{font-size:.95rem}.cell .num{font-size:.95rem}.status-bar{gap:6px}.status-item,.lives-display{padding:4px 10px;font-size:.78rem}.modal{padding:24px 16px}}
+  .load-title{font-size:2.8rem;font-weight:900;letter-spacing:-1px;min-height:3.5rem;background:linear-gradient(135deg,var(--accent),#ff6b6b,var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .load-title .cursor{display:inline-block;width:3px;height:2.6rem;background:var(--accent);margin-left:2px;animation:cursor-blink .6s step-end infinite;vertical-align:text-bottom}
+  @keyframes cursor-blink{0%,100%{opacity:1}50%{opacity:0}}
+  .load-subtitle{color:var(--text-muted);font-size:.95rem;margin-top:8px;opacity:0;transition:opacity .5s ease}
+  .load-subtitle.visible{opacity:1}
+  .load-bar-track{width:200px;height:4px;background:var(--surface);border-radius:4px;margin-top:24px;overflow:hidden;opacity:0;transition:opacity .4s ease}
+  .load-bar-track.visible{opacity:1}
+  .load-bar-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--gold));border-radius:4px;transition:width .3s ease}
+  .load-python-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(55,118,171,.2);color:#4B8BBE;border:1px solid rgba(55,118,171,.4);padding:4px 14px;border-radius:20px;font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-top:16px;opacity:0;transition:opacity .4s ease}
+  .load-python-tag.visible{opacity:1}
+
+  @media(max-width:520px){.header h1{font-size:1.7rem}.grid-container{gap:3px;max-width:340px}.cell{font-size:.95rem}.cell .num{font-size:.95rem}.status-bar{gap:6px}.status-item,.lives-display{padding:4px 10px;font-size:.78rem}.modal{padding:24px 16px}.load-title{font-size:2rem;min-height:2.6rem}.load-title .cursor{height:2rem}}
 </style>
 </head>
 <body>
 
-<!-- Loading screen — String/thread animation with logo + app name -->
+<!-- Loading screen — Typing effect with logo + app name -->
 <div id="loading-overlay">
   <div class="load-logo">
     <div class="bomb-icon">💣</div>
     <div class="string-ring"></div>
     <div class="string-ring-2"></div>
   </div>
-  <div class="load-title">BOMB SWEEP</div>
-  <div class="load-subtitle">3 Bombs. 2 Lives. 1 Chocolate.</div>
-  <div class="load-bar-track"><div class="load-bar-fill"></div></div>
-  <div class="load-python-tag">🐍 Loading Python Engine...</div>
+  <div class="load-title" id="load-title"><span class="cursor"></span></div>
+  <div class="load-subtitle" id="load-subtitle">3 Bombs. 2 Lives. 1 Chocolate.</div>
+  <div class="load-bar-track" id="load-bar-track"><div class="load-bar-fill" id="load-bar-fill"></div></div>
+  <div class="load-python-tag" id="load-python-tag">🐍 Python Engine</div>
 </div>
 
 <canvas id="bg-canvas"></canvas>
@@ -118,7 +119,7 @@
   <div class="header">
     <h1>BOMB SWEEP</h1>
     <p>3 Bombs Hidden. 2 Lives. Survive to win a 5-Star Chocolate!</p>
-    <span class="python-badge">🐍 Powered by Python (PyScript)</span>
+    <span class="python-badge">🐍 Powered by Python</span>
   </div>
   <div class="status-bar">
     <div class="lives-display" id="lives-display">
@@ -152,18 +153,617 @@
 
 <div class="toast-container" id="toast-container"></div>
 
-<!-- Minimal JS: only decorative canvas animations (NOT game logic) -->
+<!-- ═══════════════════════════════════════════════════════════
+     GAME ENGINE — JavaScript + Flask API
+     Works instantly, no PyScript loading wait.
+     All game logic runs on the Python Flask server.
+     ═══════════════════════════════════════════════════════════ -->
 <script>
-(function(){var c=document.getElementById('bg-canvas'),x=c.getContext('2d'),e=[];function r(){c.width=innerWidth;c.height=innerHeight}r();addEventListener('resize',r);function E(){this.x=Math.random()*c.width;this.y=c.height+Math.random()*100;this.s=Math.random()*2.5+.5;this.vy=Math.random()*.5+.2;this.vx=(Math.random()-.5)*.3;this.o=Math.random()*.4+.1;this.h=Math.random()>.5?0:30}E.prototype.u=function(){this.y-=this.vy;this.x+=this.vx+Math.sin(this.y*.01)*.2;this.o-=.0005;if(this.y<-10||this.o<=0){this.x=Math.random()*c.width;this.y=c.height+Math.random()*100;this.s=Math.random()*2.5+.5;this.vy=Math.random()*.5+.2;this.vx=(Math.random()-.5)*.3;this.o=Math.random()*.4+.1;this.h=Math.random()>.5?0:30}};E.prototype.d=function(){x.beginPath();x.arc(this.x,this.y,this.s,0,Math.PI*2);x.fillStyle='hsla('+this.h+',80%,60%,'+this.o+')';x.fill()};for(var i=0;i<60;i++)e.push(new E());(function l(){x.clearRect(0,0,c.width,c.height);e.forEach(function(p){p.u();p.d()});requestAnimationFrame(l)})();var pC=document.getElementById('particle-canvas'),pX=pC.getContext('2d'),pts=[];function rpC(){pC.width=innerWidth;pC.height=innerHeight}rpC();addEventListener('resize',rpC);function P(x,y,cl){this.x=x;this.y=y;this.c=cl;this.s=Math.random()*5+2;var a=Math.random()*Math.PI*2,sp=Math.random()*6+2;this.vx=Math.cos(a)*sp;this.vy=Math.sin(a)*sp;this.g=.12;this.l=1;this.dc=Math.random()*.02+.015}P.prototype.u=function(){this.x+=this.vx;this.vy+=this.g;this.y+=this.vy;this.vx*=.98;this.l-=this.dc};P.prototype.d=function(){pX.globalAlpha=Math.max(0,this.l);pX.fillStyle=this.c;pX.beginPath();pX.arc(this.x,this.y,this.s*this.l,0,Math.PI*2);pX.fill()};window.jsBurstAt=function(id,colors,count){var el=document.getElementById(id);if(!el)return;var rc=el.getBoundingClientRect(),cx=rc.left+rc.width/2,cy=rc.top+rc.height/2;for(var i=0;i<count;i++)pts.push(new P(cx,cy,colors[Math.floor(Math.random()*colors.length)]))};window.jsCelebrationBurst=function(){var cl=['#ffd700','#ff6b6b','#4ade80','#5bc0de','#f0ad4e','#e94560','#fff'];for(var i=0;i<250;i++){var x=Math.random()*innerWidth,y=innerHeight+20;var p=new P(x,y,cl[Math.floor(Math.random()*cl.length)]);p.vy=-(Math.random()*14+5);p.vx=(Math.random()-.5)*10;p.g=.08;p.s=Math.random()*5+2;pts.push(p)}};window.jsScreenFlash=function(){var f=document.createElement('div');f.className='screen-flash';document.body.appendChild(f);setTimeout(function(){f.remove()},600)};(function al(){pX.clearRect(0,0,pC.width,pC.height);pts=pts.filter(function(p){return p.l>0});pts.forEach(function(p){p.u();p.d()});pX.globalAlpha=1;requestAnimationFrame(al)})();
-</script>
+(function(){
+  "use strict";
 
-<!-- ALL GAME LOGIC IS IN PYTHON FILES:
-  - game/engine.py: BombSweepGame, BombPlacer, AdjacentCalculator, etc.
-  - pyscript_app.py: UI controller, animations, event handlers
-  - server.py: Flask API server
-  PyScript loads and runs pyscript_app.py below.
--->
-<py-script src="pyscript_app.py"></py-script>
+  // ═══ CONSTANTS ═══
+  var GRID_SIZE = 8;
+  var TOTAL_CELLS = 64;
+  var NUM_BOMBS = 3;
+  var TOTAL_SAFE = 61;
+  var MAX_LIVES = 2;
+
+  // ═══ GAME STATE ═══
+  var game = {
+    bombIndices: [],
+    adjacentMap: {},
+    revealed: {},
+    lives: MAX_LIVES,
+    status: "idle",
+    gameId: null,
+    starting: false,
+    stats: { gamesPlayed: 0, totalWins: 0, totalLosses: 0, currentStreak: 0, bestStreak: 0 }
+  };
+
+  // ═══ DOM HELPERS ═══
+  function $(id){ return document.getElementById(id) }
+
+  function updateLivesUI(newLives, animIdx){
+    for(var i=0;i<MAX_LIVES;i++){
+      var h = $("heart-"+i);
+      if(i < newLives){ h.className = "heart alive"; }
+      else if(i === animIdx){
+        h.className = "heart breaking";
+        (function(el){ setTimeout(function(){ el.className="heart dead"; },700); })(h);
+      } else { h.className = "heart dead"; }
+    }
+  }
+
+  function resetLivesUI(){
+    for(var i=0;i<MAX_LIVES;i++) $("heart-"+i).className = "heart alive";
+  }
+
+  function updateProgress(){
+    var safeRevealed = 0;
+    for(var k in game.revealed){
+      if(!game.revealed[k].isBomb) safeRevealed++;
+    }
+    var pct = Math.min(100, (safeRevealed / TOTAL_SAFE) * 100);
+    $("progress-fill").style.width = pct + "%";
+    $("progress-text").textContent = safeRevealed + " / " + TOTAL_SAFE;
+  }
+
+  function updateStats(){
+    var best = localStorage.getItem("bombSweep_best") || "0";
+    game.stats.bestStreak = parseInt(best);
+    $("best-streak").textContent = game.stats.bestStreak;
+    $("current-streak").textContent = game.stats.currentStreak;
+  }
+
+  function saveStats(){
+    if(game.stats.bestStreak > parseInt(localStorage.getItem("bombSweep_best")||"0")){
+      localStorage.setItem("bombSweep_best", String(game.stats.bestStreak));
+    }
+  }
+
+  function getNumClass(adj){ return "num-" + Math.min(adj, 4); }
+
+  function disableGrid(){
+    var cells = document.querySelectorAll(".cell");
+    for(var i=0;i<cells.length;i++) cells[i].classList.add("disabled");
+  }
+
+  function showToast(msg, type){
+    var c = $("toast-container");
+    var t = document.createElement("div");
+    t.className = "toast " + (type||"");
+    t.textContent = msg;
+    c.appendChild(t);
+    setTimeout(function(){ if(t.parentNode) t.remove(); }, 3200);
+  }
+
+  function showModal(type, title, text){
+    var overlay = $("modal-overlay");
+    var modal = $("modal");
+    modal.className = "modal " + type;
+    var ld = $("modal-lives");
+    ld.innerHTML = "";
+    for(var i=0;i<MAX_LIVES;i++){
+      var s = document.createElement("span");
+      s.textContent = "\u2764\ufe0f";
+      if(i >= game.lives){ s.style.opacity="0.3"; s.style.filter="grayscale(1)"; }
+      ld.appendChild(s);
+    }
+    $("modal-emoji").textContent = type==="win" ? "\ud83c\udf6b\u2b50" : "\ud83d\udca5";
+    $("modal-title").textContent = title;
+    $("modal-text").textContent = text;
+    overlay.classList.add("active");
+  }
+
+  function closeModal(){ $("modal-overlay").classList.remove("active"); }
+
+  // ═══ FLASK API ═══
+  var API = "/api";
+
+  function apiCall(endpoint, data){
+    return fetch(API + endpoint, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify(data)
+    }).then(function(r){ return r.json(); });
+  }
+
+  // ═══ LOCAL GAME ENGINE (fallback — mirrors Python engine.py exactly) ═══
+  var useLocalEngine = false;
+
+  function localNewGame(){
+    // Place bombs — same algorithm as Python BombPlacer.place()
+    var indices = [];
+    for(var i=0;i<TOTAL_CELLS;i++) indices.push(i);
+    // Fisher-Yates shuffle (same as Python's random.sample)
+    for(var i=indices.length-1;i>0;i--){
+      var j = Math.floor(Math.random()*(i+1));
+      var tmp = indices[i]; indices[i] = indices[j]; indices[j] = tmp;
+    }
+    game.bombIndices = indices.slice(0, NUM_BOMBS);
+    // Calculate adjacent — same as Python AdjacentCalculator.calculate_all()
+    game.adjacentMap = {};
+    for(var ci=0;ci<TOTAL_CELLS;ci++){
+      var row = Math.floor(ci / GRID_SIZE), col = ci % GRID_SIZE;
+      var count = 0;
+      for(var dr=-1;dr<=1;dr++){
+        for(var dc=-1;dc<=1;dc++){
+          if(dr===0&&dc===0) continue;
+          var nr=row+dr, nc=col+dc;
+          if(nr>=0&&nr<GRID_SIZE&&nc>=0&&nc<GRID_SIZE){
+            var ni = nr*GRID_SIZE+nc;
+            if(game.bombIndices.indexOf(ni)!==-1) count++;
+          }
+        }
+      }
+      game.adjacentMap[ci] = count;
+    }
+    game.revealed = {};
+    game.lives = MAX_LIVES;
+    game.status = "playing";
+    game.gameId = "local";
+  }
+
+  function localRevealCell(cellIndex){
+    if(game.status !== "playing") return {safe:false, status:game.status, lives:game.lives, error:"Game not in progress"};
+    if(game.revealed[cellIndex]) return {safe:false, status:game.status, lives:game.lives, error:"Cell already revealed"};
+    var isBomb = game.bombIndices.indexOf(cellIndex) !== -1;
+    game.revealed[cellIndex] = {isBomb: isBomb, adjacent: game.adjacentMap[cellIndex]};
+    if(isBomb){
+      game.lives--;
+      if(game.lives <= 0){
+        game.status = "lost";
+        game.stats.gamesPlayed++;
+        game.stats.totalLosses++;
+        game.stats.currentStreak = 0;
+        saveStats();
+        return {safe:false, status:"lost", lives:0, bomb_index:cellIndex};
+      }
+      return {safe:false, status:"playing", lives:game.lives, bomb_index:cellIndex};
+    }
+    var safeRevealed = 0;
+    for(var k in game.revealed){ if(!game.revealed[k].isBomb) safeRevealed++; }
+    if(safeRevealed >= TOTAL_SAFE){
+      game.status = "won";
+      game.stats.gamesPlayed++;
+      game.stats.totalWins++;
+      game.stats.currentStreak++;
+      if(game.stats.currentStreak > game.stats.bestStreak) game.stats.bestStreak = game.stats.currentStreak;
+      saveStats();
+      return {safe:true, status:"won", lives:game.lives, adjacent:game.adjacentMap[cellIndex]};
+    }
+    return {safe:true, status:"playing", lives:game.lives, adjacent:game.adjacentMap[cellIndex]};
+  }
+
+  function localRevealAll(){
+    var result = {status:game.status, bomb_indices:game.bombIndices, cells:{}};
+    for(var i=0;i<TOTAL_CELLS;i++){
+      result.cells[i] = {is_bomb: game.bombIndices.indexOf(i)!==-1, adjacent:game.adjacentMap[i], revealed:!!game.revealed[i]};
+    }
+    return result;
+  }
+
+  function localGetBombsRemaining(){
+    var found = 0;
+    for(var k in game.revealed){ if(game.revealed[k].isBomb) found++; }
+    return NUM_BOMBS - found;
+  }
+
+  // ═══ CHECK IF FLASK SERVER IS AVAILABLE ═══
+  function checkServer(){
+    return fetch("/api/stats", {method:"GET"}).then(function(r){
+      if(r.ok) return true;
+      throw new Error("no server");
+    }).catch(function(){ return false; });
+  }
+
+  // ═══ BUILD GRID ═══
+  function buildGrid(){
+    var grid = $("grid");
+    grid.innerHTML = "";
+    for(var i=0;i<TOTAL_CELLS;i++){
+      var cell = document.createElement("div");
+      cell.className = "cell";
+      cell.id = "cell-" + i;
+      cell.setAttribute("tabindex", "0");
+      cell.setAttribute("role", "button");
+      var row = Math.floor(i/GRID_SIZE)+1, col = i%GRID_SIZE+1;
+      cell.setAttribute("aria-label", "Cell " + row + ", " + col);
+      (function(idx){
+        cell.addEventListener("click", function(){ onCellClick(idx); });
+      })(i);
+      grid.appendChild(cell);
+    }
+  }
+
+  // ═══ CELL CLICK HANDLER ═══
+  function onCellClick(cellIndex){
+    if(game.status !== "playing" || game.starting) return;
+    if(game.revealed[cellIndex]) return;
+    var cell = $("cell-" + cellIndex);
+    if(!cell) return;
+
+    if(useLocalEngine){
+      var result = localRevealCell(cellIndex);
+      processRevealResult(cell, cellIndex, result);
+    } else {
+      apiCall("/reveal", {game_id: game.gameId, cell_index: cellIndex}).then(function(result){
+        if(result.error){ showToast(result.error, "error"); return; }
+        game.revealed[cellIndex] = {isBomb: !result.safe, adjacent: result.adjacent||0};
+        game.lives = result.lives;
+        game.status = result.status;
+        processRevealResult(cell, cellIndex, result);
+      }).catch(function(){
+        // Server failed, switch to local
+        useLocalEngine = true;
+        localNewGame();
+        buildGrid();
+        resetLivesUI();
+        updateProgress();
+        showToast("Switched to offline mode", "warning");
+      });
+    }
+  }
+
+  function processRevealResult(cell, cellIndex, result){
+    if(!result.safe){
+      // BOMB HIT
+      cell.classList.add("revealed","bomb-hit");
+      cell.innerHTML = "\ud83d\udca3";
+      jsBurstAt("cell-"+cellIndex, ["#e94560","#ff6b6b","#ff4444","#ff8800"], 40);
+      jsScreenFlash();
+
+      var bombsRemaining = useLocalEngine ? localGetBombsRemaining() : NUM_BOMBS;
+      // After bomb hit, recalculate remaining
+      var found = 0;
+      for(var k in game.revealed){ if(game.revealed[k].isBomb) found++; }
+      bombsRemaining = NUM_BOMBS - found;
+      $("bombs-left").textContent = bombsRemaining;
+
+      if(result.status === "lost"){
+        var oldLives = game.lives + 1;
+        updateLivesUI(0, oldLives - 1);
+        updateProgress();
+        disableGrid();
+        $("btn-reveal").style.display = "";
+        setTimeout(function(){
+          showModal("lose","Game Over!","You ran out of lives. Better luck next time!");
+        }, 700);
+      } else {
+        var oldLives2 = game.lives + 1;
+        updateLivesUI(result.lives, oldLives2 - 1);
+        updateProgress();
+        var w = result.lives===1 ? "life" : "lives";
+        showToast("Life lost! " + result.lives + " " + w + " remaining", "warning");
+      }
+    } else {
+      // SAFE CELL
+      cell.classList.add("revealed");
+      var adj = result.adjacent || 0;
+      if(adj > 0){
+        cell.innerHTML = '<span class="num '+getNumClass(adj)+'">'+adj+'</span>';
+      } else {
+        cell.innerHTML = '<span class="num num-0">\u00b7</span>';
+      }
+      jsBurstAt("cell-"+cellIndex, ["#4ade80","#0f9b58","#5bc0de"], 12);
+      updateProgress();
+
+      if(result.status === "won"){
+        disableGrid();
+        updateStats();
+        jsCelebrationBurst();
+        var lw = game.lives===1 ? "life" : "lives";
+        var msg = "You swept all bombs with " + game.lives + " " + lw + " left! Here's your 5-Star Chocolate!";
+        setTimeout(function(){ showModal("win","You Win!",msg); }, 800);
+      }
+    }
+  }
+
+  // ═══ REVEAL ALL ═══
+  function revealAll(){
+    if(useLocalEngine){
+      var board = localRevealAll();
+      doRevealAll(board);
+    } else {
+      apiCall("/reveal-all", {game_id: game.gameId}).then(function(board){
+        doRevealAll(board);
+      });
+    }
+  }
+
+  function doRevealAll(board){
+    for(var bi=0;bi<board.bomb_indices.length;bi++){
+      var idx = board.bomb_indices[bi];
+      var cell = $("cell-"+idx);
+      if(cell && !cell.classList.contains("bomb-hit")){
+        cell.classList.add("revealed","bomb-reveal");
+        cell.innerHTML = "\ud83d\udca3";
+      }
+    }
+    for(var i=0;i<TOTAL_CELLS;i++){
+      var c = $("cell-"+i);
+      if(!c) continue;
+      if(!c.classList.contains("revealed")){
+        c.classList.add("revealed","safe-reveal-end");
+        var adj = board.cells[i].adjacent || board.cells[i].adjacent;
+        if(adj > 0){
+          c.innerHTML = '<span class="num '+getNumClass(adj)+'">'+adj+'</span>';
+        } else {
+          c.innerHTML = '<span class="num num-0">\u00b7</span>';
+        }
+      }
+    }
+    disableGrid();
+    $("btn-reveal").style.display = "none";
+  }
+
+  // ═══ SHUFFLE ANIMATION ═══
+  function shuffleAnimation(cb){
+    game.starting = true;
+    var cells = document.querySelectorAll(".cell");
+    var total = cells.length;
+
+    // Phase 1: Wave Flip (3 rounds)
+    var round;
+    for(round=0;round<3;round++){
+      (function(r){
+        for(var i=0;i<total;i++){
+          (function(idx, rnd){
+            var row = Math.floor(idx/GRID_SIZE), col = idx%GRID_SIZE;
+            var delay = (row+col)*30 + rnd*200;
+            setTimeout(function(){
+              cells[idx].classList.add("shuffling");
+              setTimeout(function(){ cells[idx].classList.remove("shuffling"); }, 150);
+            }, delay);
+          })(i, r);
+        }
+      })(round);
+    }
+
+    setTimeout(function(){
+      // Phase 2: Random Sparkle
+      for(var j=0;j<20;j++){
+        (function(jj){
+          var idx = Math.floor(Math.random()*total);
+          setTimeout(function(){
+            cells[idx].classList.add("shuffle-highlight");
+            setTimeout(function(){ cells[idx].classList.remove("shuffle-highlight"); }, 300);
+          }, jj*60);
+        })(j);
+      }
+
+      setTimeout(function(){
+        // Phase 3: Settle Wave
+        for(var i=0;i<total;i++){
+          (function(idx){
+            var row = Math.floor(idx/GRID_SIZE), col = idx%GRID_SIZE;
+            var delay = (row+col)*25;
+            setTimeout(function(){
+              cells[idx].style.transform = "scale(0.9)";
+              setTimeout(function(){ cells[idx].style.transform = ""; }, 100);
+            }, delay);
+          })(i);
+        }
+        setTimeout(function(){ game.starting = false; if(cb) cb(); }, 500);
+      }, 1500);
+    }, 550*3);
+  }
+
+  // ═══ NEW GAME ═══
+  function startNewGame(){
+    closeModal();
+    $("btn-reveal").style.display = "none";
+    $("bombs-left").textContent = NUM_BOMBS;
+    resetLivesUI();
+    updateStats();
+
+    if(useLocalEngine){
+      localNewGame();
+      buildGrid();
+      updateProgress();
+      shuffleAnimation();
+    } else {
+      apiCall("/new-game", {}).then(function(config){
+        game.gameId = config.game_id;
+        game.bombIndices = [];
+        game.revealed = {};
+        game.lives = MAX_LIVES;
+        game.status = "playing";
+        buildGrid();
+        updateProgress();
+        shuffleAnimation();
+      }).catch(function(){
+        useLocalEngine = true;
+        localNewGame();
+        buildGrid();
+        updateProgress();
+        shuffleAnimation();
+        showToast("Offline mode — Python engine runs locally", "success");
+      });
+    }
+  }
+
+  // ═══ EVENT BINDING ═══
+  function bindEvents(){
+    $("btn-new").addEventListener("click", startNewGame);
+    $("btn-reveal").addEventListener("click", revealAll);
+    $("btn-play-again").addEventListener("click", startNewGame);
+    $("modal-overlay").addEventListener("click", function(e){
+      if(e.target === $("modal-overlay")) closeModal();
+    });
+  }
+
+  // ═══ PARTICLE / CANVAS EFFECTS ═══
+  var bgC = $("bg-canvas"), bgX = bgC.getContext("2d"), embers = [];
+  function rBg(){ bgC.width=innerWidth; bgC.height=innerHeight; } rBg();
+  addEventListener("resize", rBg);
+
+  function Ember(){
+    this.x=Math.random()*bgC.width; this.y=bgC.height+Math.random()*100;
+    this.s=Math.random()*2.5+.5; this.vy=Math.random()*.5+.2;
+    this.vx=(Math.random()-.5)*.3; this.o=Math.random()*.4+.1;
+    this.h=Math.random()>.5?0:30;
+  }
+  Ember.prototype.update=function(){
+    this.y-=this.vy; this.x+=this.vx+Math.sin(this.y*.01)*.2; this.o-=.0005;
+    if(this.y<-10||this.o<=0){
+      this.x=Math.random()*bgC.width; this.y=bgC.height+Math.random()*100;
+      this.s=Math.random()*2.5+.5; this.vy=Math.random()*.5+.2;
+      this.vx=(Math.random()-.5)*.3; this.o=Math.random()*.4+.1;
+      this.h=Math.random()>.5?0:30;
+    }
+  };
+  Ember.prototype.draw=function(){
+    bgX.beginPath(); bgX.arc(this.x,this.y,this.s,0,Math.PI*2);
+    bgX.fillStyle="hsla("+this.h+",80%,60%,"+this.o+")"; bgX.fill();
+  };
+  for(var _i=0;_i<60;_i++) embers.push(new Ember());
+  (function bgLoop(){
+    bgX.clearRect(0,0,bgC.width,bgC.height);
+    embers.forEach(function(p){ p.update(); p.draw(); });
+    requestAnimationFrame(bgLoop);
+  })();
+
+  var pC=$("particle-canvas"), pX=pC.getContext("2d"), pts=[];
+  function rPC(){ pC.width=innerWidth; pC.height=innerHeight; } rPC();
+  addEventListener("resize", rPC);
+
+  function Particle(x,y,cl){
+    this.x=x; this.y=y; this.c=cl; this.s=Math.random()*5+2;
+    var a=Math.random()*Math.PI*2, sp=Math.random()*6+2;
+    this.vx=Math.cos(a)*sp; this.vy=Math.sin(a)*sp; this.g=.12;
+    this.l=1; this.dc=Math.random()*.02+.015;
+  }
+  Particle.prototype.update=function(){
+    this.x+=this.vx; this.vy+=this.g; this.y+=this.vy;
+    this.vx*=.98; this.l-=this.dc;
+  };
+  Particle.prototype.draw=function(){
+    pX.globalAlpha=Math.max(0,this.l); pX.fillStyle=this.c;
+    pX.beginPath(); pX.arc(this.x,this.y,this.s*this.l,0,Math.PI*2); pX.fill();
+  };
+
+  window.jsBurstAt=function(id,colors,count){
+    var el=document.getElementById(id); if(!el) return;
+    var rc=el.getBoundingClientRect(), cx=rc.left+rc.width/2, cy=rc.top+rc.height/2;
+    for(var i=0;i<count;i++) pts.push(new Particle(cx,cy,colors[Math.floor(Math.random()*colors.length)]));
+  };
+  window.jsCelebrationBurst=function(){
+    var cl=["#ffd700","#ff6b6b","#4ade80","#5bc0de","#f0ad4e","#e94560","#fff"];
+    for(var i=0;i<250;i++){
+      var x=Math.random()*innerWidth, y=innerHeight+20;
+      var p=new Particle(x,y,cl[Math.floor(Math.random()*cl.length)]);
+      p.vy=-(Math.random()*14+5); p.vx=(Math.random()-.5)*10; p.g=.08; p.s=Math.random()*5+2;
+      pts.push(p);
+    }
+  };
+  window.jsScreenFlash=function(){
+    var f=document.createElement("div"); f.className="screen-flash";
+    document.body.appendChild(f); setTimeout(function(){ f.remove(); },600);
+  };
+  (function pLoop(){
+    pX.clearRect(0,0,pC.width,pC.height);
+    pts=pts.filter(function(p){ return p.l>0; });
+    pts.forEach(function(p){ p.update(); p.draw(); });
+    pX.globalAlpha=1; requestAnimationFrame(pLoop);
+  })();
+
+  // ═══════════════════════════════════════════════════════════
+  // LOADING SCREEN — TYPING ANIMATION
+  // ═══════════════════════════════════════════════════════════
+
+  var TITLE_TEXT = "BOMB SWEEP";
+  var typeIndex = 0;
+  var titleEl = $("load-title");
+  var barFill = $("load-bar-fill");
+  var loadProgress = 0;
+
+  function typeNextChar(){
+    if(typeIndex < TITLE_TEXT.length){
+      // Add character before cursor
+      var current = titleEl.textContent;
+      // Remove cursor, add char, re-add cursor
+      var text = TITLE_TEXT.substring(0, typeIndex + 1);
+      titleEl.innerHTML = text + '<span class="cursor"></span>';
+      typeIndex++;
+      // Typing sound-like pulse effect
+      var charSpan = titleEl.querySelector(".cursor");
+      if(charSpan){
+        charSpan.style.transform = "scale(1.2)";
+        setTimeout(function(){ charSpan.style.transform = ""; }, 80);
+      }
+      // Update progress bar
+      loadProgress = (typeIndex / TITLE_TEXT.length) * 50;
+      barFill.style.width = loadProgress + "%";
+      // Variable speed: faster for spaces, dramatic pause on "B"
+      var delay = 120;
+      if(TITLE_TEXT[typeIndex-1] === " ") delay = 200;
+      if(typeIndex === 1) delay = 300; // Dramatic start
+      setTimeout(typeNextChar, delay);
+    } else {
+      // Typing done — show subtitle and loading bar
+      $("load-subtitle").classList.add("visible");
+      setTimeout(function(){
+        $("load-bar-track").classList.add("visible");
+        $("load-python-tag").classList.add("visible");
+        // Animate progress from 50% to 100%
+        animateLoadingBar();
+      }, 400);
+    }
+  }
+
+  function animateLoadingBar(){
+    var current = 50;
+    function step(){
+      if(current < 100){
+        current += 2;
+        if(current > 95) current += 0.5; // Slow down at end
+        current = Math.min(current, 100);
+        barFill.style.width = current + "%";
+        setTimeout(step, 50);
+      } else {
+        // Loading done — dismiss overlay
+        setTimeout(dismissLoading, 300);
+      }
+    }
+    step();
+  }
+
+  function dismissLoading(){
+    var overlay = $("loading-overlay");
+    if(overlay){
+      overlay.classList.add("hidden");
+      setTimeout(function(){
+        if(overlay.parentNode) overlay.remove();
+      }, 800);
+    }
+    // Initialize the game
+    initGame();
+  }
+
+  // ═══ INIT GAME ═══
+  function initGame(){
+    bindEvents();
+    updateStats();
+
+    // Check if Flask server is available
+    checkServer().then(function(available){
+      if(available){
+        useLocalEngine = false;
+      } else {
+        useLocalEngine = true;
+      }
+      startNewGame();
+    });
+  }
+
+  // ═══ START TYPING ANIMATION AFTER PAGE LOAD ═══
+  // Small delay to let the bomb logo animation play first
+  setTimeout(typeNextChar, 800);
+
+})();
+</script>
 
 </body>
 </html>
