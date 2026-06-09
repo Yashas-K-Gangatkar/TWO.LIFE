@@ -1,10 +1,9 @@
 """
 Bomb Sweep — Python Flask Backend
-All game logic (bomb placement, reveal, win/loss detection) runs server-side.
-Frontend communicates via REST API endpoints.
+2 Lives, 3 Bombs — All game logic runs server-side.
 
-Run:  python app.py
-Open: http://127.0.0.1:5000
+Run:  python3 app.py
+Open: http://127.0.0.1:5001
 """
 
 from flask import Flask, render_template, jsonify, request
@@ -29,7 +28,8 @@ stats = {
 
 GRID_SIZE = 8
 TOTAL_CELLS = GRID_SIZE * GRID_SIZE  # 64
-NUM_BOMBS = 1
+NUM_BOMBS = 3
+MAX_LIVES = 2
 
 
 def calculate_adjacent(bomb_indices, cell_index, grid_size=8):
@@ -56,6 +56,13 @@ def get_all_adjacent(bomb_indices, grid_size=8):
     return adjacent_map
 
 
+def place_bombs(num_bombs, grid_size=8):
+    """Randomly place bombs on the grid, returning a set of indices."""
+    total = grid_size * grid_size
+    indices = random.sample(range(total), num_bombs)
+    return set(indices)
+
+
 # ──────────────────────────────────────────────
 # Routes
 # ──────────────────────────────────────────────
@@ -68,36 +75,37 @@ def index():
 
 @app.route("/api/new-game", methods=["POST"])
 def new_game():
-    """Start a new game — server picks a random bomb position."""
+    """Start a new game — server picks random bomb positions."""
     game_id = str(uuid.uuid4())
-    bomb_index = random.randint(0, TOTAL_CELLS - 1)
+    bomb_indices = place_bombs(NUM_BOMBS, GRID_SIZE)
 
     games[game_id] = {
         "id": game_id,
-        "bomb_index": bomb_index,
-        "bomb_indices": {bomb_index},
+        "bomb_indices": bomb_indices,
         "revealed": set(),
         "flagged": set(),
         "status": "playing",       # playing | won | lost
+        "lives": MAX_LIVES,
         "created_at": time.time(),
-        "adjacent_map": get_all_adjacent({bomb_index}, GRID_SIZE),
+        "adjacent_map": get_all_adjacent(bomb_indices, GRID_SIZE),
     }
 
     stats["games_played"] += 1
 
-    print(f"[NEW GAME] id={game_id}  bomb={bomb_index}")
+    print(f"[NEW GAME] id={game_id}  bombs={sorted(bomb_indices)}  lives={MAX_LIVES}")
 
     return jsonify({
         "game_id": game_id,
         "grid_size": GRID_SIZE,
         "total_cells": TOTAL_CELLS,
         "num_bombs": NUM_BOMBS,
+        "lives": MAX_LIVES,
     })
 
 
 @app.route("/api/reveal", methods=["POST"])
 def reveal():
-    """Reveal a cell — returns safe/boom + adjacent count."""
+    """Reveal a cell — bomb costs a life, 0 lives = game over."""
     data = request.get_json(silent=True)
     if not data:
         return jsonify({"error": "Invalid JSON body"}), 400
@@ -129,20 +137,37 @@ def reveal():
 
     # ── Check for bomb ──
     if cell_index in game["bomb_indices"]:
-        game["status"] = "lost"
+        game["lives"] -= 1
         game["revealed"].add(cell_index)
-        stats["total_losses"] += 1
-        stats["current_streak"] = 0
 
-        print(f"[BOOM] id={game_id}  cell={cell_index}")
+        if game["lives"] <= 0:
+            # ── GAME OVER ──
+            game["status"] = "lost"
+            stats["total_losses"] += 1
+            stats["current_streak"] = 0
 
-        return jsonify({
-            "safe": False,
-            "status": "lost",
-            "bomb_index": cell_index,
-            "revealed_count": len(game["revealed"]),
-            "total_safe": TOTAL_CELLS - NUM_BOMBS,
-        })
+            print(f"[BOOM - DEAD] id={game_id}  cell={cell_index}  lives=0")
+
+            return jsonify({
+                "safe": False,
+                "status": "lost",
+                "lives": 0,
+                "bomb_index": cell_index,
+                "revealed_count": len(game["revealed"]),
+                "total_safe": TOTAL_CELLS - NUM_BOMBS,
+            })
+        else:
+            # ── Lost a life but still playing ──
+            print(f"[BOOM - LIFE LOST] id={game_id}  cell={cell_index}  lives={game['lives']}")
+
+            return jsonify({
+                "safe": False,
+                "status": "playing",
+                "lives": game["lives"],
+                "bomb_index": cell_index,
+                "revealed_count": len(game["revealed"]),
+                "total_safe": TOTAL_CELLS - NUM_BOMBS,
+            })
 
     # ── Safe cell ──
     game["revealed"].add(cell_index)
@@ -158,11 +183,12 @@ def reveal():
         if stats["current_streak"] > stats["best_streak"]:
             stats["best_streak"] = stats["current_streak"]
 
-        print(f"[WIN] id={game_id}  streak={stats['current_streak']}")
+        print(f"[WIN] id={game_id}  streak={stats['current_stiness']}")
 
         return jsonify({
             "safe": True,
             "status": "won",
+            "lives": game["lives"],
             "adjacent": adjacent,
             "revealed_count": revealed_count,
             "total_safe": total_safe,
@@ -171,6 +197,7 @@ def reveal():
     return jsonify({
         "safe": True,
         "status": "playing",
+        "lives": game["lives"],
         "adjacent": adjacent,
         "revealed_count": revealed_count,
         "total_safe": total_safe,
@@ -226,5 +253,5 @@ def cleanup_old_games():
 
 if __name__ == "__main__":
     print("\n💣  Bomb Sweep Server Starting...")
-    print("   Open http://127.0.0.1:5000 in your browser\n")
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    print("   3 Bombs, 2 Lives — Open http://127.0.0.1:5001\n")
+    app.run(debug=True, host="0.0.0.0", port=5001)
