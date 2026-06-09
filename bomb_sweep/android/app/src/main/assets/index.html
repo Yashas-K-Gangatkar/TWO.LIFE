@@ -36,9 +36,9 @@
   .cell:active:not(.revealed):not(.disabled){transform:scale(.95)}
   .cell.revealed{background:var(--cell-revealed);cursor:default;animation:cell-reveal .4s ease forwards}
   @keyframes cell-reveal{0%{transform:rotateY(90deg) scale(.8);opacity:.5}50%{transform:rotateY(-5deg) scale(1.02)}100%{transform:rotateY(0) scale(1);opacity:1}}
-  .cell.bomb-hit{background:rgba(233,69,96,.25);border-color:var(--accent);animation:bomb-shake .6s ease}
+  .cell.bomb-hit{background:rgba(233,69,96,.25)!important;border-color:var(--accent)!important;animation:bomb-shake .6s ease}
   @keyframes bomb-shake{0%,100%{transform:translateX(0)}10%{transform:translateX(-6px) rotate(-2deg)}20%{transform:translateX(6px) rotate(2deg)}30%{transform:translateX(-5px) rotate(-1deg)}40%{transform:translateX(5px) rotate(1deg)}50%{transform:translateX(-3px)}60%{transform:translateX(3px)}}
-  .cell.bomb-reveal{background:rgba(233,69,96,.12);border-color:rgba(233,69,96,.3)}
+  .cell.bomb-reveal{background:rgba(233,69,96,.12)!important;border-color:rgba(233,69,96,.3)!important}
   .cell.safe-reveal-end{background:rgba(233,69,96,.05);border-color:rgba(233,69,96,.15)}
   .cell.disabled{pointer-events:none}
   .cell.shuffling{animation:shuffle-flip .15s ease}
@@ -92,7 +92,6 @@
   .load-bar-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--gold));border-radius:4px;transition:width .3s ease}
   .load-python-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(55,118,171,.2);color:#4B8BBE;border:1px solid rgba(55,118,171,.4);padding:4px 14px;border-radius:20px;font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-top:16px;opacity:0;transition:opacity .4s ease}
   .load-python-tag.visible{opacity:1}
-  .debug-info{position:fixed;bottom:8px;left:8px;z-index:50;font-size:10px;color:#555;font-family:monospace;pointer-events:none;opacity:0.5}
 
   @media(max-width:520px){.header h1{font-size:1.7rem}.grid-container{gap:3px;max-width:340px}.cell{font-size:.95rem}.cell .num{font-size:.95rem}.status-bar{gap:6px}.status-item,.lives-display{padding:4px 10px;font-size:.78rem}.modal{padding:24px 16px}.load-title{font-size:2rem;min-height:2.6rem}.load-title .cursor{height:2rem}}
 </style>
@@ -102,14 +101,14 @@
 <!-- Loading screen -->
 <div id="loading-overlay">
   <div class="load-logo">
-    <div class="bomb-icon">💣</div>
+    <div class="bomb-icon">&#x1F4A3;</div>
     <div class="string-ring"></div>
     <div class="string-ring-2"></div>
   </div>
   <div class="load-title" id="load-title"><span class="cursor"></span></div>
   <div class="load-subtitle" id="load-subtitle">3 Bombs. 2 Lives. 1 Chocolate.</div>
   <div class="load-bar-track" id="load-bar-track"><div class="load-bar-fill" id="load-bar-fill"></div></div>
-  <div class="load-python-tag" id="load-python-tag">🐍 Python Engine</div>
+  <div class="load-python-tag" id="load-python-tag">&#x1F40D; Python Engine</div>
 </div>
 
 <canvas id="bg-canvas"></canvas>
@@ -119,16 +118,16 @@
   <div class="header">
     <h1>BOMB SWEEP</h1>
     <p>3 Bombs Hidden. 2 Lives. Survive to win a 5-Star Chocolate!</p>
-    <span class="python-badge">🐍 Powered by Python</span>
+    <span class="python-badge">&#x1F40D; Powered by Python</span>
   </div>
   <div class="status-bar">
     <div class="lives-display" id="lives-display">
       <span class="heart alive" id="heart-0">&#10084;&#65039;</span>
       <span class="heart alive" id="heart-1">&#10084;&#65039;</span>
     </div>
-    <div class="status-item"><span class="icon">💣</span><span class="label">Bombs:</span><span class="value" id="bombs-left">3</span></div>
-    <div class="status-item"><span class="icon">🏆</span><span class="label">Best:</span><span class="value" id="best-streak">0</span></div>
-    <div class="status-item"><span class="icon">🔥</span><span class="label">Streak:</span><span class="value" id="current-streak">0</span></div>
+    <div class="status-item"><span class="icon">&#x1F4A3;</span><span class="label">Bombs:</span><span class="value" id="bombs-left">3</span></div>
+    <div class="status-item"><span class="icon">&#x1F3C6;</span><span class="label">Best:</span><span class="value" id="best-streak">0</span></div>
+    <div class="status-item"><span class="icon">&#x1F525;</span><span class="label">Streak:</span><span class="value" id="current-streak">0</span></div>
   </div>
   <div class="progress-wrapper">
     <div class="progress-label"><span>Safe cells revealed</span><span id="progress-text">0 / 61</span></div>
@@ -136,14 +135,14 @@
   </div>
   <div class="grid-container" id="grid"></div>
   <div class="actions">
-    <button class="btn btn-primary" id="btn-new">💣 New Game</button>
-    <button class="btn btn-secondary" id="btn-reveal" style="display:none">👁 Reveal Board</button>
+    <button class="btn btn-primary" id="btn-new">&#x1F4A3; New Game</button>
+    <button class="btn btn-secondary" id="btn-reveal" style="display:none">&#x1F441; Reveal Board</button>
   </div>
 </div>
 
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal" id="modal">
-    <span class="emoji" id="modal-emoji">🍫</span>
+    <span class="emoji" id="modal-emoji">&#x1F36B;</span>
     <h2 id="modal-title">You Win!</h2>
     <div class="lives-summary" id="modal-lives"></div>
     <p id="modal-text">You swept all the bombs!</p>
@@ -152,13 +151,20 @@
 </div>
 
 <div class="toast-container" id="toast-container"></div>
-<div class="debug-info" id="debug-info"></div>
 
 <script>
 (function(){
   "use strict";
 
-  // ═══ CONSTANTS ═══
+  /* ═══════════════════════════════════════════════════════════
+     BOMB SWEEP — Game Engine (JavaScript)
+     Mirrors Python game/engine.py exactly.
+     All bomb placement, adjacent calculation, and game logic
+     is implemented here. The Python files (game/engine.py,
+     pyscript_app.py, server.py) provide the same logic for
+     the Flask server and GitHub language stats.
+     ═══════════════════════════════════════════════════════════ */
+
   var GRID_SIZE = 8;
   var TOTAL_CELLS = 64;
   var NUM_BOMBS = 3;
@@ -166,48 +172,34 @@
   var MAX_LIVES = 2;
 
   // ═══ GAME STATE ═══
-  // FIX: Use a Set-like approach with an object + hasOwnProperty
-  // instead of relying on truthy/falsy values (bug: key "0" is falsy)
-  var game = {
-    bombIndices: [],      // Array of bomb positions
-    adjacentMap: {},      // Map of cell index -> adjacent bomb count
-    revealedSet: {},      // Map of cell index -> {isBomb, adjacent} (use hasOwnProperty to check)
-    lives: MAX_LIVES,
-    status: "idle",       // idle | playing | won | lost
-    starting: false,
-    stats: { gamesPlayed: 0, totalWins: 0, totalLosses: 0, currentStreak: 0, bestStreak: 0 }
-  };
+  var bombIndices = [];   // Array of bomb positions (e.g. [5, 23, 47])
+  var adjacentMap = {};   // Map: cell index -> adjacent bomb count
+  var revealed = {};      // Map: cell index -> {isBomb: bool, adjacent: int}
+  var lives = MAX_LIVES;
+  var status = "idle";    // idle | playing | won | lost
+  var starting = false;
+  var stats = { currentStreak: 0, bestStreak: 0 };
 
   // ═══ DOM HELPERS ═══
-  function $(id){ return document.getElementById(id) }
+  function $(id){ return document.getElementById(id); }
 
-  // FIX: Safe check for revealed cells (handles index 0 correctly)
   function isRevealed(idx){
-    return game.revealedSet.hasOwnProperty(idx);
+    // FIX: Use hasOwnProperty because idx "0" is falsy
+    return revealed.hasOwnProperty(String(idx));
   }
 
-  function getRevealed(idx){
-    return game.revealedSet[idx] || null;
-  }
-
-  function setRevealed(idx, data){
-    game.revealedSet[idx] = data;
-  }
-
-  // Count safe cells revealed
   function countSafeRevealed(){
     var count = 0;
-    for(var k in game.revealedSet){
-      if(game.revealedSet.hasOwnProperty(k) && !game.revealedSet[k].isBomb) count++;
+    for(var k in revealed){
+      if(revealed.hasOwnProperty(k) && !revealed[k].isBomb) count++;
     }
     return count;
   }
 
-  // Count bombs found
   function countBombsFound(){
     var count = 0;
-    for(var k in game.revealedSet){
-      if(game.revealedSet.hasOwnProperty(k) && game.revealedSet[k].isBomb) count++;
+    for(var k in revealed){
+      if(revealed.hasOwnProperty(k) && revealed[k].isBomb) count++;
     }
     return count;
   }
@@ -215,6 +207,7 @@
   function updateLivesUI(newLives, breakIdx){
     for(var i=0;i<MAX_LIVES;i++){
       var h = $("heart-"+i);
+      if(!h) continue;
       if(i < newLives){
         h.className = "heart alive";
       } else if(i === breakIdx){
@@ -227,26 +220,29 @@
   }
 
   function resetLivesUI(){
-    for(var i=0;i<MAX_LIVES;i++) $("heart-"+i).className = "heart alive";
+    for(var i=0;i<MAX_LIVES;i++){
+      var h = $("heart-"+i);
+      if(h) h.className = "heart alive";
+    }
   }
 
   function updateProgress(){
-    var safeRevealed = countSafeRevealed();
-    var pct = Math.min(100, (safeRevealed / TOTAL_SAFE) * 100);
+    var safe = countSafeRevealed();
+    var pct = Math.min(100, (safe / TOTAL_SAFE) * 100);
     $("progress-fill").style.width = pct + "%";
-    $("progress-text").textContent = safeRevealed + " / " + TOTAL_SAFE;
+    $("progress-text").textContent = safe + " / " + TOTAL_SAFE;
   }
 
   function updateStats(){
-    var best = localStorage.getItem("bombSweep_best") || "0";
-    game.stats.bestStreak = parseInt(best) || 0;
-    $("best-streak").textContent = game.stats.bestStreak;
-    $("current-streak").textContent = game.stats.currentStreak;
+    var best = parseInt(localStorage.getItem("bombSweep_best")) || 0;
+    stats.bestStreak = best;
+    $("best-streak").textContent = stats.bestStreak;
+    $("current-streak").textContent = stats.currentStreak;
   }
 
   function saveStats(){
-    if(game.stats.bestStreak > parseInt(localStorage.getItem("bombSweep_best")||"0")){
-      localStorage.setItem("bombSweep_best", String(game.stats.bestStreak));
+    if(stats.bestStreak > parseInt(localStorage.getItem("bombSweep_best")) || 0){
+      localStorage.setItem("bombSweep_best", String(stats.bestStreak));
     }
   }
 
@@ -275,22 +271,28 @@
     for(var i=0;i<MAX_LIVES;i++){
       var s = document.createElement("span");
       s.textContent = "\u2764\ufe0f";
-      if(i >= game.lives){ s.style.opacity="0.3"; s.style.filter="grayscale(1)"; }
+      if(i >= lives){ s.style.opacity="0.3"; s.style.filter="grayscale(1)"; }
       ld.appendChild(s);
     }
-    $("modal-emoji").textContent = type==="win" ? "\ud83c\udf6b\u2b50" : "\ud83d\udca5";
+    if(type==="win"){
+      $("modal-emoji").textContent = "\ud83c\udf6b\u2b50"; // chocolate + star
+    } else {
+      $("modal-emoji").textContent = "\ud83d\udca5"; // explosion
+    }
     $("modal-title").textContent = title;
     $("modal-text").textContent = text;
     overlay.classList.add("active");
   }
 
-  function closeModal(){ $("modal-overlay").classList.remove("active"); }
+  function closeModal(){
+    $("modal-overlay").classList.remove("active");
+  }
 
   // ═══════════════════════════════════════════════════════════
-  // LOCAL GAME ENGINE — mirrors Python game/engine.py exactly
+  // GAME ENGINE — Same logic as Python game/engine.py
   // ═══════════════════════════════════════════════════════════
 
-  function localNewGame(){
+  function newGame(){
     // Place bombs using Fisher-Yates shuffle (same as Python random.sample)
     var indices = [];
     for(var i=0;i<TOTAL_CELLS;i++) indices.push(i);
@@ -298,10 +300,10 @@
       var j = Math.floor(Math.random()*(i+1));
       var tmp = indices[i]; indices[i] = indices[j]; indices[j] = tmp;
     }
-    game.bombIndices = indices.slice(0, NUM_BOMBS);
+    bombIndices = indices.slice(0, NUM_BOMBS);
 
-    // Calculate adjacent bomb counts (same as Python AdjacentCalculator)
-    game.adjacentMap = {};
+    // Calculate adjacent bomb counts (same as Python AdjacentCalculator.calculate_all)
+    adjacentMap = {};
     for(var ci=0;ci<TOTAL_CELLS;ci++){
       var row = Math.floor(ci / GRID_SIZE), col = ci % GRID_SIZE;
       var count = 0;
@@ -311,93 +313,78 @@
           var nr = row + dr, nc = col + dc;
           if(nr >= 0 && nr < GRID_SIZE && nc >= 0 && nc < GRID_SIZE){
             var ni = nr * GRID_SIZE + nc;
-            if(game.bombIndices.indexOf(ni) !== -1) count++;
+            if(bombIndices.indexOf(ni) !== -1) count++;
           }
         }
       }
-      game.adjacentMap[ci] = count;
+      adjacentMap[ci] = count;
     }
 
     // Reset game state
-    game.revealedSet = {};
-    game.lives = MAX_LIVES;
-    game.status = "playing";
+    revealed = {};
+    lives = MAX_LIVES;
+    status = "playing";
 
-    // Debug: log bomb positions
-    console.log("[BOMB SWEEP] New game started. Bombs at:", JSON.stringify(game.bombIndices));
-    $("debug-info").textContent = "Bombs: " + JSON.stringify(game.bombIndices);
+    console.log("[BombSweep] New game. Bombs at:", JSON.stringify(bombIndices));
   }
 
-  function localRevealCell(cellIndex){
-    // Validate game is in progress
-    if(game.status !== "playing"){
-      return {safe:false, status:game.status, lives:game.lives, error:"Game not in progress"};
+  function revealCell(cellIndex){
+    // Validate
+    if(status !== "playing"){
+      return {safe:false, status:status, lives:lives, error:"Game not in progress"};
     }
-
-    // FIX: Use hasOwnProperty instead of truthy check (cell 0 bug!)
     if(isRevealed(cellIndex)){
-      return {safe:false, status:game.status, lives:game.lives, error:"Cell already revealed"};
+      return {safe:false, status:status, lives:lives, error:"Already revealed"};
     }
-
     if(cellIndex < 0 || cellIndex >= TOTAL_CELLS){
-      return {safe:false, status:game.status, lives:game.lives, error:"Invalid cell"};
+      return {safe:false, status:status, lives:lives, error:"Invalid cell"};
     }
 
-    var isBomb = game.bombIndices.indexOf(cellIndex) !== -1;
-    var adjacent = game.adjacentMap[cellIndex];
+    var isBomb = bombIndices.indexOf(cellIndex) !== -1;
+    var adj = adjacentMap[cellIndex] || 0;
 
-    // Store reveal
-    setRevealed(cellIndex, {isBomb: isBomb, adjacent: adjacent});
+    // Mark as revealed
+    revealed[String(cellIndex)] = {isBomb: isBomb, adjacent: adj};
 
     if(isBomb){
-      // BOMB HIT — lose a life
-      game.lives--;
-
-      if(game.lives <= 0){
-        // GAME OVER
-        game.status = "lost";
-        game.stats.gamesPlayed++;
-        game.stats.totalLosses++;
-        game.stats.currentStreak = 0;
+      // BOMB HIT — same as Python engine
+      lives--;
+      if(lives <= 0){
+        status = "lost";
+        stats.currentStreak = 0;
         saveStats();
-        console.log("[BOMB SWEEP] BOOM at cell " + cellIndex + "! GAME OVER! Lives: 0");
-        return {safe:false, status:"lost", lives:0, bomb_index:cellIndex, adjacent:adjacent};
-      } else {
-        console.log("[BOMB SWEEP] BOOM at cell " + cellIndex + "! Lives remaining: " + game.lives);
-        return {safe:false, status:"playing", lives:game.lives, bomb_index:cellIndex, adjacent:adjacent};
+        console.log("[BombSweep] BOOM at cell " + cellIndex + "! GAME OVER!");
+        return {safe:false, status:"lost", lives:0, bomb_index:cellIndex, adjacent:adj};
       }
+      console.log("[BombSweep] BOOM at cell " + cellIndex + "! Lives: " + lives);
+      return {safe:false, status:"playing", lives:lives, bomb_index:cellIndex, adjacent:adj};
     }
 
-    // SAFE CELL — check win condition
+    // SAFE CELL
     var safeRevealed = countSafeRevealed();
-
     if(safeRevealed >= TOTAL_SAFE){
       // WIN!
-      game.status = "won";
-      game.stats.gamesPlayed++;
-      game.stats.totalWins++;
-      game.stats.currentStreak++;
-      if(game.stats.currentStreak > game.stats.bestStreak){
-        game.stats.bestStreak = game.stats.currentStreak;
-      }
+      status = "won";
+      stats.currentStreak++;
+      if(stats.currentStreak > stats.bestStreak) stats.bestStreak = stats.currentStreak;
       saveStats();
-      console.log("[BOMB SWEEP] WIN! All safe cells revealed. Lives left: " + game.lives);
-      return {safe:true, status:"won", lives:game.lives, adjacent:adjacent};
+      console.log("[BombSweep] WIN! Lives left: " + lives);
+      return {safe:true, status:"won", lives:lives, adjacent:adj};
     }
 
-    return {safe:true, status:"playing", lives:game.lives, adjacent:adjacent};
+    return {safe:true, status:"playing", lives:lives, adjacent:adj};
   }
 
-  function localRevealAll(){
+  function getRevealAllData(){
     var cells = {};
     for(var i=0;i<TOTAL_CELLS;i++){
       cells[i] = {
-        is_bomb: game.bombIndices.indexOf(i) !== -1,
-        adjacent: game.adjacentMap[i],
+        is_bomb: bombIndices.indexOf(i) !== -1,
+        adjacent: adjacentMap[i] || 0,
         revealed: isRevealed(i)
       };
     }
-    return {status:game.status, bomb_indices:game.bombIndices.slice(), cells:cells};
+    return {status:status, bomb_indices:bombIndices.slice(), cells:cells};
   }
 
   // ═══ BUILD GRID ═══
@@ -410,12 +397,9 @@
       cell.id = "cell-" + i;
       cell.setAttribute("tabindex", "0");
       cell.setAttribute("role", "button");
-      var row = Math.floor(i/GRID_SIZE)+1, col = i%GRID_SIZE+1;
-      cell.setAttribute("aria-label", "Cell " + row + ", " + col);
       (function(idx){
         cell.addEventListener("click", function(e){
           e.preventDefault();
-          e.stopPropagation();
           onCellClick(idx);
         });
       })(i);
@@ -425,20 +409,18 @@
 
   // ═══ CELL CLICK HANDLER ═══
   function onCellClick(cellIndex){
-    if(game.status !== "playing" || game.starting) return;
-
-    // FIX: Use hasOwnProperty check (cell 0 bug!)
+    if(status !== "playing" || starting) return;
     if(isRevealed(cellIndex)) return;
 
     var cell = $("cell-" + cellIndex);
     if(!cell) return;
 
-    // Process reveal using local engine
-    var result = localRevealCell(cellIndex);
-    processRevealResult(cell, cellIndex, result);
+    var result = revealCell(cellIndex);
+    handleRevealResult(cell, cellIndex, result);
   }
 
-  function processRevealResult(cell, cellIndex, result){
+  function handleRevealResult(cell, cellIndex, result){
+    // If there's an error and game isn't over, show toast
     if(result.error && result.status !== "lost" && result.status !== "won"){
       showToast(result.error, "error");
       return;
@@ -446,19 +428,18 @@
 
     if(!result.safe){
       // ═══ BOMB HIT ═══
-      cell.classList.add("revealed","bomb-hit");
-      cell.innerHTML = "\ud83d\udca3"; // 💣
+      cell.classList.add("revealed", "bomb-hit");
+      cell.textContent = "\ud83d\udca3"; // 💣 emoji
       jsBurstAt("cell-"+cellIndex, ["#e94560","#ff6b6b","#ff4444","#ff8800"], 40);
       jsScreenFlash();
 
-      // Update bombs remaining counter
+      // Update bombs remaining
       var bombsRemaining = NUM_BOMBS - countBombsFound();
       $("bombs-left").textContent = bombsRemaining;
 
       if(result.status === "lost"){
-        // GAME OVER — both hearts die
-        // FIX: Properly animate both hearts dying
-        updateLivesUI(0, 0); // Break heart 0 first
+        // GAME OVER — both lives lost
+        updateLivesUI(0, 0);
         setTimeout(function(){
           var h1 = $("heart-1");
           if(h1) h1.className = "heart breaking";
@@ -470,23 +451,23 @@
         $("btn-reveal").style.display = "";
 
         setTimeout(function(){
-          showModal("lose","Game Over!","You ran out of lives. Better luck next time!");
+          showModal("lose", "Game Over!", "You ran out of lives. Better luck next time!");
         }, 800);
       } else {
-        // Lost one life, still playing
-        // FIX: Calculate the correct heart index to break
-        var breakIdx = result.lives; // If 1 life left, break heart at index 1
+        // Lost 1 life, still playing
+        var breakIdx = result.lives; // lives remaining = index of heart to break
         updateLivesUI(result.lives, breakIdx);
         updateProgress();
         var w = result.lives === 1 ? "life" : "lives";
         showToast("Bomb hit! " + result.lives + " " + w + " remaining", "warning");
       }
+
     } else {
       // ═══ SAFE CELL ═══
       cell.classList.add("revealed");
       var adj = result.adjacent || 0;
       if(adj > 0){
-        cell.innerHTML = '<span class="num '+getNumClass(adj)+'">'+adj+'</span>';
+        cell.innerHTML = '<span class="num ' + getNumClass(adj) + '">' + adj + '</span>';
       } else {
         cell.innerHTML = '<span class="num num-0">\u00b7</span>';
       }
@@ -494,65 +475,57 @@
       updateProgress();
 
       if(result.status === "won"){
-        // WIN!
         disableGrid();
         updateStats();
         jsCelebrationBurst();
-        var lw = game.lives === 1 ? "life" : "lives";
-        var msg = "You swept all bombs with " + game.lives + " " + lw + " left! Here's your 5-Star Chocolate!";
-        setTimeout(function(){ showModal("win","You Win!",msg); }, 800);
+        var lw = lives === 1 ? "life" : "lives";
+        var msg = "You swept all bombs with " + lives + " " + lw + " left! Here's your 5-Star Chocolate!";
+        setTimeout(function(){ showModal("win", "You Win!", msg); }, 800);
       }
     }
   }
 
   // ═══ REVEAL ALL (after game over) ═══
   function revealAll(){
-    var board = localRevealAll();
-
-    // Show all bombs
+    var board = getRevealAllData();
     for(var bi=0;bi<board.bomb_indices.length;bi++){
       var idx = board.bomb_indices[bi];
       var cell = $("cell-"+idx);
       if(cell && !cell.classList.contains("bomb-hit")){
-        cell.classList.add("revealed","bomb-reveal");
-        cell.innerHTML = "\ud83d\udca3";
+        cell.classList.add("revealed", "bomb-reveal");
+        cell.textContent = "\ud83d\udca3";
       }
     }
-
-    // Show all remaining safe cells
     for(var i=0;i<TOTAL_CELLS;i++){
       var c = $("cell-"+i);
-      if(!c) continue;
-      if(!c.classList.contains("revealed")){
-        c.classList.add("revealed","safe-reveal-end");
-        var adj = board.cells[i].adjacent;
-        if(adj > 0){
-          c.innerHTML = '<span class="num '+getNumClass(adj)+'">'+adj+'</span>';
-        } else {
-          c.innerHTML = '<span class="num num-0">\u00b7</span>';
-        }
+      if(!c || c.classList.contains("revealed")) continue;
+      c.classList.add("revealed", "safe-reveal-end");
+      var adj = board.cells[i].adjacent;
+      if(adj > 0){
+        c.innerHTML = '<span class="num ' + getNumClass(adj) + '">' + adj + '</span>';
+      } else {
+        c.innerHTML = '<span class="num num-0">\u00b7</span>';
       }
     }
-
     disableGrid();
     $("btn-reveal").style.display = "none";
   }
 
   // ═══ SHUFFLE ANIMATION ═══
   function shuffleAnimation(callback){
-    game.starting = true;
+    starting = true;
     var cells = document.querySelectorAll(".cell");
     var total = cells.length;
-    if(total === 0){ game.starting = false; if(callback) callback(); return; }
+    if(total === 0){ starting = false; if(callback) callback(); return; }
 
-    // Phase 1: Wave Flip (2 rounds — reduced from 3 for speed)
-    var phase1Duration = 0;
+    // Phase 1: Wave Flip (2 rounds)
+    var maxDelay = 0;
     for(var round=0;round<2;round++){
       for(var i=0;i<total;i++){
         (function(idx, rnd){
           var row = Math.floor(idx/GRID_SIZE), col = idx%GRID_SIZE;
           var delay = (row+col)*30 + rnd*300;
-          if(delay + 150 > phase1Duration) phase1Duration = delay + 150;
+          if(delay + 150 > maxDelay) maxDelay = delay + 150;
           setTimeout(function(){
             if(cells[idx]){
               cells[idx].classList.add("shuffling");
@@ -591,22 +564,19 @@
             }, delay);
           })(i);
         }
-
-        var settleTime = (GRID_SIZE*2)*20 + 100 + 200;
         setTimeout(function(){
-          game.starting = false;
-          console.log("[BOMB SWEEP] Shuffle done. Game ready!");
+          starting = false;
+          console.log("[BombSweep] Game ready! Click any cell.");
           if(callback) callback();
-        }, settleTime);
-      }, 900);
-    }, phase1Duration + 200);
+        }, 500);
+      }, 800);
+    }, maxDelay + 100);
   }
 
-  // ═══ NEW GAME ═══
+  // ═══ START NEW GAME ═══
   function startNewGame(){
     closeModal();
-
-    localNewGame();
+    newGame();
 
     $("btn-reveal").style.display = "none";
     $("bombs-left").textContent = NUM_BOMBS;
@@ -616,19 +586,16 @@
     updateProgress();
 
     shuffleAnimation(function(){
-      console.log("[BOMB SWEEP] Game started! Click cells to reveal.");
+      console.log("[BombSweep] Shuffle complete. Bombs hidden at:", bombIndices);
     });
   }
 
   // ═══ EVENT BINDING ═══
   function bindEvents(){
     $("btn-new").addEventListener("click", function(){
-      if(game.starting) return;
-      startNewGame();
+      if(!starting) startNewGame();
     });
-    $("btn-reveal").addEventListener("click", function(){
-      revealAll();
-    });
+    $("btn-reveal").addEventListener("click", revealAll);
     $("btn-play-again").addEventListener("click", function(){
       startNewGame();
     });
@@ -664,7 +631,7 @@
   for(var _i=0;_i<60;_i++) embers.push(new Ember());
   (function bgLoop(){
     bgX.clearRect(0,0,bgC.width,bgC.height);
-    embers.forEach(function(p){ p.update(); p.draw(); });
+    for(var i=0;i<embers.length;i++){ embers[i].update(); embers[i].draw(); }
     requestAnimationFrame(bgLoop);
   })();
 
@@ -708,7 +675,7 @@
   (function pLoop(){
     pX.clearRect(0,0,pC.width,pC.height);
     pts=pts.filter(function(p){ return p.l>0; });
-    pts.forEach(function(p){ p.update(); p.draw(); });
+    for(var i=0;i<pts.length;i++){ pts[i].update(); pts[i].draw(); }
     pX.globalAlpha=1; requestAnimationFrame(pLoop);
   })();
 
@@ -720,15 +687,13 @@
   var typeIndex = 0;
   var titleEl = $("load-title");
   var barFill = $("load-bar-fill");
-  var loadProgress = 0;
 
   function typeNextChar(){
     if(typeIndex < TITLE_TEXT.length){
       var text = TITLE_TEXT.substring(0, typeIndex + 1);
       titleEl.innerHTML = text + '<span class="cursor"></span>';
       typeIndex++;
-      loadProgress = (typeIndex / TITLE_TEXT.length) * 50;
-      barFill.style.width = loadProgress + "%";
+      barFill.style.width = ((typeIndex / TITLE_TEXT.length) * 50) + "%";
       var delay = 120;
       if(TITLE_TEXT[typeIndex-1] === " ") delay = 200;
       if(typeIndex === 1) delay = 300;
@@ -747,8 +712,7 @@
     var current = 50;
     function step(){
       if(current < 100){
-        current += 3;
-        current = Math.min(current, 100);
+        current = Math.min(current + 3, 100);
         barFill.style.width = current + "%";
         setTimeout(step, 40);
       } else {
@@ -762,21 +726,15 @@
     var overlay = $("loading-overlay");
     if(overlay){
       overlay.classList.add("hidden");
-      setTimeout(function(){
-        if(overlay.parentNode) overlay.remove();
-      }, 800);
+      setTimeout(function(){ if(overlay.parentNode) overlay.remove(); }, 800);
     }
-    initGame();
-  }
-
-  // ═══ INIT GAME ═══
-  function initGame(){
+    // Start the game!
     bindEvents();
     updateStats();
     startNewGame();
   }
 
-  // Start typing animation after a short delay
+  // Start typing animation
   setTimeout(typeNextChar, 800);
 
 })();
