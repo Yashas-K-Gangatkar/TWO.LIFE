@@ -24,11 +24,11 @@ import time
 # GAME CONSTANTS
 # ═══════════════════════════════════════════════════════════
 
-GRID_SIZE = 8
-TOTAL_CELLS = GRID_SIZE * GRID_SIZE  # 64 cells
-NUM_BOMBS = 3
-TOTAL_SAFE = TOTAL_CELLS - NUM_BOMBS  # 61 safe cells
-MAX_LIVES = 2
+GRID_SIZE = 10
+TOTAL_CELLS = GRID_SIZE * GRID_SIZE  # 100 cells
+NUM_BOMBS = 35
+TOTAL_SAFE = TOTAL_CELLS - NUM_BOMBS  # 65 safe cells
+MAX_LIVES = 1
 
 
 # ═══════════════════════════════════════════════════════════
@@ -300,11 +300,12 @@ class BombSweepGame:
     5. Providing board data for UI rendering
 
     The game rules:
-    - 8x8 grid with 3 hidden bombs
-    - Player has 2 lives
-    - Clicking a bomb costs 1 life
+    - 10x10 grid with 35 hidden bombs
+    - Player has 1 life
+    - Clicking a bomb costs 1 life (instant Game Over)
     - Losing all lives = Game Over
-    - Revealing all 61 safe cells = Win (5-Star Chocolate!)
+    - Revealing all 65 safe cells = Win (5-Star Chocolate!)
+    - Approximately 1% win probability
 
     Usage:
         >>> game = BombSweepGame()
