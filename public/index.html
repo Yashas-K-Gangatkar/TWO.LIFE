@@ -45,6 +45,8 @@
   @keyframes shuffle-flip{0%{transform:rotateY(0) scale(1);background:var(--cell-bg)}50%{transform:rotateY(90deg) scale(.9);background:#3a3a5e}100%{transform:rotateY(0) scale(1);background:var(--cell-bg)}}
   .cell.shuffle-highlight{background:linear-gradient(135deg,#e94560,#ff6b6b,#ffd700)!important;animation:shuffle-glow .3s ease}
   @keyframes shuffle-glow{0%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.1);filter:brightness(1.5)}100%{transform:scale(1);filter:brightness(1)}}
+  .cell.bomb-preview{background:rgba(233,69,96,.3)!important;border-color:var(--accent)!important;animation:bomb-pulse 1.2s ease infinite}
+  @keyframes bomb-pulse{0%,100%{box-shadow:0 0 8px rgba(233,69,96,.4)}50%{box-shadow:0 0 20px rgba(233,69,96,.8)}}
   .cell .num{font-size:1rem;font-weight:800}
   .num-1{color:#5bc0de}.num-2{color:#5cb85c}.num-3{color:#f0ad4e}.num-4{color:#e94560}.num-5{color:#c084fc}.num-6{color:#818cf8}.num-7{color:#f472b6}.num-8{color:#fb923c}
   .num-0{color:rgba(255,255,255,.1);font-size:.8rem}
@@ -54,6 +56,8 @@
   .btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 28px var(--accent-glow)}
   .btn-secondary{background:var(--surface-light);color:var(--text);border:1px solid var(--border)}
   .btn-secondary:hover{background:var(--cell-hover);transform:translateY(-1px)}
+  .btn-shuffle{background:linear-gradient(135deg,#ffd700,#ff8c00);color:#000;box-shadow:0 4px 20px rgba(255,215,0,.3)}
+  .btn-shuffle:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(255,215,0,.5)}
   .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);z-index:100;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s ease}
   .modal-overlay.active{opacity:1;pointer-events:auto}
   .modal{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:36px;text-align:center;max-width:380px;width:90%;transform:scale(.8) translateY(20px);transition:transform .4s cubic-bezier(.34,1.56,.64,1)}
@@ -70,6 +74,9 @@
   @keyframes toast-out{from{opacity:1}to{opacity:0;transform:translateY(-10px)}}
   .screen-flash{position:fixed;inset:0;z-index:80;pointer-events:none;background:rgba(233,69,96,.3);animation:screen-flash .5s ease forwards}
   @keyframes screen-flash{0%{opacity:1}100%{opacity:0}}
+  .phase-banner{background:linear-gradient(135deg,var(--accent),#ff6b6b);color:#fff;padding:8px 24px;border-radius:30px;font-size:.85rem;font-weight:700;margin-bottom:12px;text-align:center;animation:banner-pulse 2s ease infinite}
+  @keyframes banner-pulse{0%,100%{opacity:1}50%{opacity:.8}}
+  .phase-banner.shuffle-phase{background:linear-gradient(135deg,#ffd700,#ff8c00);color:#000}
 
   /* LOADING SCREEN */
   #loading-overlay{position:fixed;inset:0;z-index:999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .8s ease}
@@ -106,7 +113,7 @@
     <div class="string-ring-2"></div>
   </div>
   <div class="load-title" id="load-title"><span class="cursor"></span></div>
-  <div class="load-subtitle" id="load-subtitle">10 Bombs. 1 Life. Can You Survive?</div>
+  <div class="load-subtitle" id="load-subtitle">5 Bombs. Memorize. Shuffle. Survive.</div>
   <div class="load-bar-track" id="load-bar-track"><div class="load-bar-fill" id="load-bar-fill"></div></div>
   <div class="load-python-tag" id="load-python-tag">&#x1F40D; Python Engine</div>
 </div>
@@ -117,24 +124,26 @@
 <div class="app">
   <div class="header">
     <h1>BOMB SWEEP</h1>
-    <p>10 Bombs Hidden. 1 Life. Can You Survive?</p>
+    <p>Memorize the bombs, then shuffle and play!</p>
     <span class="python-badge">&#x1F40D; Powered by Python</span>
   </div>
+  <div class="phase-banner" id="phase-banner">&#x1F4A3; MEMORIZE PHASE &mdash; Remember the 5 bomb locations!</div>
   <div class="status-bar">
     <div class="lives-display" id="lives-display">
       <span class="heart alive" id="heart-0">&#10084;&#65039;</span>
     </div>
-    <div class="status-item"><span class="icon">&#x1F4A3;</span><span class="label">Bombs:</span><span class="value" id="bombs-left">10</span></div>
+    <div class="status-item"><span class="icon">&#x1F4A3;</span><span class="label">Bombs:</span><span class="value" id="bombs-left">5</span></div>
     <div class="status-item"><span class="icon">&#x1F3C6;</span><span class="label">Best:</span><span class="value" id="best-streak">0</span></div>
     <div class="status-item"><span class="icon">&#x1F525;</span><span class="label">Streak:</span><span class="value" id="current-streak">0</span></div>
   </div>
   <div class="progress-wrapper">
-    <div class="progress-label"><span>Safe cells revealed</span><span id="progress-text">0 / 90</span></div>
+    <div class="progress-label"><span>Safe cells revealed</span><span id="progress-text">0 / 95</span></div>
     <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
   </div>
   <div class="grid-container" id="grid"></div>
   <div class="actions">
     <button class="btn btn-primary" id="btn-new">&#x1F4A3; New Game</button>
+    <button class="btn btn-shuffle" id="btn-shuffle" style="display:none">&#x1F500; Shuffle &amp; Play!</button>
     <button class="btn btn-secondary" id="btn-reveal" style="display:none">&#x1F441; Reveal Board</button>
   </div>
 </div>
@@ -155,27 +164,18 @@
 (function(){
   "use strict";
 
-  /* ═══════════════════════════════════════════════════════════
-     BOMB SWEEP — Game Engine (JavaScript)
-     Mirrors Python game/engine.py exactly.
-     All bomb placement, adjacent calculation, and game logic
-     is implemented here. The Python files (game/engine.py,
-     pyscript_app.py, server.py) provide the same logic for
-     the Flask server and GitHub language stats.
-     ═══════════════════════════════════════════════════════════ */
-
   var GRID_SIZE = 10;
   var TOTAL_CELLS = 100;
-  var NUM_BOMBS = 10;
-  var TOTAL_SAFE = 90;
+  var NUM_BOMBS = 5;
+  var TOTAL_SAFE = 95;
   var MAX_LIVES = 1;
 
   // ═══ GAME STATE ═══
-  var bombIndices = [];   // Array of bomb positions (e.g. [5, 23, 47])
-  var adjacentMap = {};   // Map: cell index -> adjacent bomb count
-  var revealed = {};      // Map: cell index -> {isBomb: bool, adjacent: int}
+  var bombIndices = [];
+  var adjacentMap = {};
+  var revealed = {};
   var lives = MAX_LIVES;
-  var status = "idle";    // idle | playing | won | lost
+  var status = "idle";    // idle | memorize | playing | won | lost
   var starting = false;
   var stats = { currentStreak: 0, bestStreak: 0 };
 
@@ -183,7 +183,6 @@
   function $(id){ return document.getElementById(id); }
 
   function isRevealed(idx){
-    // FIX: Use hasOwnProperty because idx "0" is falsy
     return revealed.hasOwnProperty(String(idx));
   }
 
@@ -252,6 +251,11 @@
     for(var i=0;i<cells.length;i++) cells[i].classList.add("disabled");
   }
 
+  function enableGrid(){
+    var cells = document.querySelectorAll(".cell");
+    for(var i=0;i<cells.length;i++) cells[i].classList.remove("disabled");
+  }
+
   function showToast(msg, type){
     var c = $("toast-container");
     var t = document.createElement("div");
@@ -274,9 +278,9 @@
       ld.appendChild(s);
     }
     if(type==="win"){
-      $("modal-emoji").textContent = "\ud83c\udf6b\u2b50"; // chocolate + star
+      $("modal-emoji").textContent = "\ud83c\udf6b\u2b50";
     } else {
-      $("modal-emoji").textContent = "\ud83d\udca5"; // explosion
+      $("modal-emoji").textContent = "\ud83d\udca5";
     }
     $("modal-title").textContent = title;
     $("modal-text").textContent = text;
@@ -288,11 +292,10 @@
   }
 
   // ═══════════════════════════════════════════════════════════
-  // GAME ENGINE — Same logic as Python game/engine.py
+  // GAME ENGINE
   // ═══════════════════════════════════════════════════════════
 
-  function newGame(){
-    // Place bombs using Fisher-Yates shuffle (same as Python random.sample)
+  function placeBombs(){
     var indices = [];
     for(var i=0;i<TOTAL_CELLS;i++) indices.push(i);
     for(var i=indices.length-1;i>0;i--){
@@ -300,8 +303,9 @@
       var tmp = indices[i]; indices[i] = indices[j]; indices[j] = tmp;
     }
     bombIndices = indices.slice(0, NUM_BOMBS);
+  }
 
-    // Calculate adjacent bomb counts (same as Python AdjacentCalculator.calculate_all)
+  function calculateAdjacent(){
     adjacentMap = {};
     for(var ci=0;ci<TOTAL_CELLS;ci++){
       var row = Math.floor(ci / GRID_SIZE), col = ci % GRID_SIZE;
@@ -318,17 +322,9 @@
       }
       adjacentMap[ci] = count;
     }
-
-    // Reset game state
-    revealed = {};
-    lives = MAX_LIVES;
-    status = "playing";
-
-    console.log("[BombSweep] New game. Bombs at:", JSON.stringify(bombIndices));
   }
 
   function revealCell(cellIndex){
-    // Validate
     if(status !== "playing"){
       return {safe:false, status:status, lives:lives, error:"Game not in progress"};
     }
@@ -342,32 +338,25 @@
     var isBomb = bombIndices.indexOf(cellIndex) !== -1;
     var adj = adjacentMap[cellIndex] || 0;
 
-    // Mark as revealed
     revealed[String(cellIndex)] = {isBomb: isBomb, adjacent: adj};
 
     if(isBomb){
-      // BOMB HIT — same as Python engine
       lives--;
       if(lives <= 0){
         status = "lost";
         stats.currentStreak = 0;
         saveStats();
-        console.log("[BombSweep] BOOM at cell " + cellIndex + "! GAME OVER!");
         return {safe:false, status:"lost", lives:0, bomb_index:cellIndex, adjacent:adj};
       }
-      console.log("[BombSweep] BOOM at cell " + cellIndex + "! Lives: " + lives);
       return {safe:false, status:"playing", lives:lives, bomb_index:cellIndex, adjacent:adj};
     }
 
-    // SAFE CELL
     var safeRevealed = countSafeRevealed();
     if(safeRevealed >= TOTAL_SAFE){
-      // WIN!
       status = "won";
       stats.currentStreak++;
       if(stats.currentStreak > stats.bestStreak) stats.bestStreak = stats.currentStreak;
       saveStats();
-      console.log("[BombSweep] WIN! Lives left: " + lives);
       return {safe:true, status:"won", lives:lives, adjacent:adj};
     }
 
@@ -406,6 +395,25 @@
     }
   }
 
+  // ═══ SHOW BOMB PREVIEW (Memorize Phase) ═══
+  function showBombPreview(){
+    for(var i=0;i<bombIndices.length;i++){
+      var cell = $("cell-" + bombIndices[i]);
+      if(cell){
+        cell.classList.add("bomb-preview");
+        cell.textContent = "\ud83d\udca3";
+      }
+    }
+  }
+
+  function clearBombPreview(){
+    var cells = document.querySelectorAll(".cell.bomb-preview");
+    for(var i=0;i<cells.length;i++){
+      cells[i].classList.remove("bomb-preview");
+      cells[i].textContent = "";
+    }
+  }
+
   // ═══ CELL CLICK HANDLER ═══
   function onCellClick(cellIndex){
     if(status !== "playing" || starting) return;
@@ -419,41 +427,33 @@
   }
 
   function handleRevealResult(cell, cellIndex, result){
-    // If there's an error and game isn't over, show toast
     if(result.error && result.status !== "lost" && result.status !== "won"){
       showToast(result.error, "error");
       return;
     }
 
     if(!result.safe){
-      // ═══ BOMB HIT ═══
       cell.classList.add("revealed", "bomb-hit");
-      cell.textContent = "\ud83d\udca3"; // 💣 emoji
+      cell.textContent = "\ud83d\udca3";
       jsBurstAt("cell-"+cellIndex, ["#e94560","#ff6b6b","#ff4444","#ff8800"], 40);
       jsScreenFlash();
 
-      // Update bombs remaining
       var bombsRemaining = NUM_BOMBS - countBombsFound();
       $("bombs-left").textContent = bombsRemaining;
 
       if(result.status === "lost"){
-        // GAME OVER — last life lost
         updateLivesUI(0, 0);
-
         updateProgress();
         disableGrid();
         $("btn-reveal").style.display = "";
-
         setTimeout(function(){
-          showModal("lose", "Game Over!", "You ran out of lives. Better luck next time!");
+          showModal("lose", "Game Over!", "You hit a bomb! Better luck next time!");
         }, 800);
       } else {
-        // This shouldn't happen with MAX_LIVES=1, but handle gracefully
         updateProgress();
       }
 
     } else {
-      // ═══ SAFE CELL ═══
       cell.classList.add("revealed");
       var adj = result.adjacent || 0;
       if(adj > 0){
@@ -469,7 +469,7 @@
         updateStats();
         jsCelebrationBurst();
         var lw = lives === 1 ? "life" : "lives";
-        var msg = "You swept all bombs with " + lives + " " + lw + " left! Here's your 5-Star Chocolate!";
+        var msg = "You swept all bombs with " + lives + " " + lw + " left!";
         setTimeout(function(){ showModal("win", "You Win!", msg); }, 800);
       }
     }
@@ -556,27 +556,73 @@
         }
         setTimeout(function(){
           starting = false;
-          console.log("[BombSweep] Game ready! Click any cell.");
           if(callback) callback();
         }, 500);
       }, 800);
     }, maxDelay + 100);
   }
 
-  // ═══ START NEW GAME ═══
+  // ═══ START NEW GAME (Memorize Phase) ═══
   function startNewGame(){
     closeModal();
-    newGame();
+    placeBombs();
+    calculateAdjacent();
+
+    // Reset game state
+    revealed = {};
+    lives = MAX_LIVES;
+    status = "memorize";
 
     $("btn-reveal").style.display = "none";
+    $("btn-shuffle").style.display = "none";
     $("bombs-left").textContent = NUM_BOMBS;
     resetLivesUI();
     updateStats();
     buildGrid();
     updateProgress();
 
+    // Show bomb positions for memorize phase
+    showBombPreview();
+
+    // Update banner
+    var banner = $("phase-banner");
+    banner.className = "phase-banner";
+    banner.innerHTML = "&#x1F4A3; MEMORIZE PHASE &mdash; Remember the " + NUM_BOMBS + " bomb locations!";
+
+    // Show shuffle button
+    $("btn-shuffle").style.display = "";
+    $("btn-new").style.display = "none";
+
+    showToast("Memorize the bomb positions!", "warning");
+    console.log("[BombSweep] Memorize phase. Bombs at:", JSON.stringify(bombIndices));
+  }
+
+  // ═══ SHUFFLE & START PLAYING ═══
+  function shuffleAndPlay(){
+    if(starting) return;
+    $("btn-shuffle").style.display = "none";
+
+    // Clear the bomb preview
+    clearBombPreview();
+
+    // Update banner
+    var banner = $("phase-banner");
+    banner.className = "phase-banner shuffle-phase";
+    banner.innerHTML = "&#x1F500; SHUFFLING... Bombs are moving!";
+
+    // Re-place bombs (jumble them!)
+    placeBombs();
+    calculateAdjacent();
+
+    console.log("[BombSweep] Bombs shuffled to:", JSON.stringify(bombIndices));
+
     shuffleAnimation(function(){
-      console.log("[BombSweep] Shuffle complete. Bombs hidden at:", bombIndices);
+      status = "playing";
+      banner.className = "phase-banner shuffle-phase";
+      banner.innerHTML = "&#x1F3AE; PLAY PHASE &mdash; Avoid the bombs!";
+      $("btn-new").style.display = "";
+      showToast("Bombs shuffled! Good luck!", "success");
+      console.log("[BombSweep] Play phase! Bombs hidden at:", bombIndices);
     });
   }
 
@@ -584,6 +630,9 @@
   function bindEvents(){
     $("btn-new").addEventListener("click", function(){
       if(!starting) startNewGame();
+    });
+    $("btn-shuffle").addEventListener("click", function(){
+      if(!starting) shuffleAndPlay();
     });
     $("btn-reveal").addEventListener("click", revealAll);
     $("btn-play-again").addEventListener("click", function(){
@@ -718,7 +767,6 @@
       overlay.classList.add("hidden");
       setTimeout(function(){ if(overlay.parentNode) overlay.remove(); }, 800);
     }
-    // Start the game!
     bindEvents();
     updateStats();
     startNewGame();
